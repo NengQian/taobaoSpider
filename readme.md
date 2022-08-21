@@ -10,18 +10,29 @@
 #改成你的chromedriver的完整路径地址
 chromeDirverPath = r'D:\project\chromedriver/chromedriver.exe'
 #改成想要爬的商品关键词
-itemKeys = "洗发水"
+itemKey = "洗发水"
 #输出图片目录
 outputDir = './test'
+#爬取页面数量
+pagesNum = 3 
 ```
 
 ### 运行脚本
 ``` Bash
-python taobaoSpider.py 
+python taobaoSpider.py 篮球鞋 1 ./shoes
+# 以篮球鞋为关键词，下载淘宝该关键词下第一页的所有商品图片到./shoes目录
 ```
 需要手机淘宝扫码登录网页淘宝。
 
 爬取的图片会保存在上面```outputDir```目录中。
+
+### 在windows中直接运行可执行程序
+``` Bash
+# 打开命令行（在开始菜单中搜索cmd）
+# 移动到./dist目录下
+taobaoSpider.exe 篮球鞋 1 ./shoes
+```
+
 
 
 ### 参考
