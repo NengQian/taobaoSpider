@@ -10,15 +10,13 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 import os.path 
+import sys
 
-
-itemKeys = "洗发水"
+itemKey = "洗发水"
 outputDir = './test'
 chromeDirverPath = r'D:\project\chromedriver/chromedriver.exe'
 pagesNum = 3  # 总共爬取的页数
 # 创建输出目录
-if not os.path.isdir(outputDir):
-    os.mkdir(outputDir)
 
 
 
@@ -36,6 +34,10 @@ def swipe_down(browser,second):
 # 创建浏览器
 def functions():
 
+    if not os.path.isdir(outputDir):
+        os.mkdir(outputDir)
+
+
     options = webdriver.ChromeOptions()
     options.add_experimental_option('excludeSwitches', ['enable-automation'])  # 此步骤很重要，设置为开发者模式，防止被各大网站识别出来使用了Selenium 
     browser = webdriver.Chrome(chromeDirverPath, options=options)
@@ -46,7 +48,7 @@ def functions():
 
     # 找到搜索框输入内容并搜索
     # browser.find_element_by_xpath('//*[@id="q"]').send_keys("便携果汁杯", keys.Keys.ENTER)
-    browser.find_element("xpath",'//*[@id="q"]').send_keys(itemKeys, keys.Keys.ENTER)
+    browser.find_element("xpath",'//*[@id="q"]').send_keys(itemKey, keys.Keys.ENTER)
 
     time.sleep(1)
     # 切换成二维码登录
@@ -81,10 +83,13 @@ def functions():
             img_url = "http:" + img
             # print(img_url)
             # 通过requests下载这张图片
-            sleep_time = random.random()*3
+            sleep_time = random.random()*3 # [Neng] 通过request下载，是不是最好等待时间设长一些？如果太短则没有接受完就跳过了？
             time.sleep(sleep_time)
             # 文件夹需要手动创建好
-            file = open(f"./test\\{n}.jpg", "wb")
+            outputImgPath = os.path.join(outputDir,f'{n}.jpg')
+            file = open( outputImgPath, "wb")
+            
+            #file = open( outputDir+f"\\{n}.jpg", "wb")
             try:
                 file.write(requests.get(img_url).content)  
             except:
@@ -102,10 +107,29 @@ def functions():
 
         time.sleep(2)
 
+    print('[' + itemKey + ']'+'前'+str(pagesNum)+'页商品图片下载完成,结果保存在：' + str(os.path.abspath(outputDir)))
+
     file.close()
     # 关闭浏览器
     browser.quit()
 
 
 if __name__ == '__main__':
+    print('Number of arguments:', len(sys.argv), 'arguments.')
+    print ('Argument List:', str(sys.argv) )
+    # global pagesNum, outputDir, itemKey
+    if len(sys.argv) == 4:
+        itemKey = sys.argv[1]
+        pagesNum = int(sys.argv[2])
+        outputDir = sys.argv[3]
+    elif len(sys.argv) != 0:
+        print('请输入完整指令，例如：')
+        print('python taobaoSpider.py 洗发水 3 ./imgDir')
+        sys.exit()
+
+    else:
+        print("没有输入参数，则使用默认参数")
+        print("商品关键词：" + itemKey)
+        print("页数：" + str(pagesNum))
+        print('图片输出目录：' + str(outputDir))
     functions()
