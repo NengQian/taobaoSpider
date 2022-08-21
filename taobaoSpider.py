@@ -122,7 +122,7 @@ if __name__ == '__main__':
         itemKey = sys.argv[1]
         pagesNum = int(sys.argv[2])
         outputDir = sys.argv[3]
-    elif len(sys.argv) != 0:
+    elif len(sys.argv) != 1:
         print('请输入完整指令，例如：')
         print('python taobaoSpider.py 洗发水 3 ./imgDir')
         sys.exit()
