@@ -15,6 +15,7 @@ import os.path
 itemKeys = "洗发水"
 outputDir = './test'
 chromeDirverPath = r'D:\project\chromedriver/chromedriver.exe'
+pagesNum = 3  # 总共爬取的页数
 # 创建输出目录
 if not os.path.isdir(outputDir):
     os.mkdir(outputDir)
@@ -50,8 +51,6 @@ def functions():
     time.sleep(1)
     # 切换成二维码登录
     # browser.find_element_by_xpath('//*[@id="login"]/div[1]/i').click()
-    
-
     browser.find_element("xpath",'//*[@id="login"]/div[1]/i').click()
 
     # 判断当前页面是否为登录页面
@@ -61,17 +60,19 @@ def functions():
         # maybe use  WebDriverWait 
     print("登录成功!!!")
     n = 1
-    count = 1
     
-    # 等待直到页面刷新出
-    itemsTotal = wait.until(EC.presence_of_element_located(( By.CSS_SELECTOR, '.m-itemlist .items > div')))
-    print("页面成功出现!!!")
-    print(itemsTotal)
-    while True:
-        #items = browser.find_elements_by_css_selector('.m-itemlist .items > div')
-        items = browser.find_elements( By.CSS_SELECTOR, '.m-itemlist .items > div')
-        print(len(items))
-        for item in items:
+    for i in range(pagesNum):
+        # 等待直到页面刷新出
+        print("开始爬取：" + str(i+1) + '页')
+        goodsTotal = wait.until(EC.presence_of_all_elements_located(( By.CSS_SELECTOR, '.m-itemlist .items > div')))
+        print("页面成功出现!!!")
+        # print(itemsTotal)
+        # items = browser.find_elements( By.CSS_SELECTOR, '.m-itemlist .items > div')
+        print(len(goodsTotal))
+        for item in goodsTotal:
+            
+            # [neng] todo: 也许这里可以点击进入这个商品单独的页面，并爬取他相关的六张图片。
+            
             # 获取这张图片的下载地址
             # img = item.find_element_by_css_selector(".pic-box .pic img").get_attribute("data-src")
             img = item.find_element( By.CSS_SELECTOR ,".pic-box .pic img").get_attribute("data-src")
@@ -80,7 +81,7 @@ def functions():
             img_url = "http:" + img
             # print(img_url)
             # 通过requests下载这张图片
-            sleep_time = random.random()*10
+            sleep_time = random.random()*3
             time.sleep(sleep_time)
             # 文件夹需要手动创建好
             file = open(f"./test\\{n}.jpg", "wb")
@@ -94,19 +95,14 @@ def functions():
             # 精髓之处，大部分人被检测为机器人就是因为进一步模拟人工操作
             # 模拟人工向下浏览商品，即进行模拟下滑操作，防止被识别出是机器人
             swipe_down(browser, 0.5)  # 这里可以稍微快一点，把下面那个sleep删掉吧。
-            # time.sleep(1)
 
         # 翻页操作
         # browser.find_element_by_css_selector('.wraper:nth-last-child(1) .next > a').click()
         browser.find_element(By.CSS_SELECTOR, '.wraper:nth-last-child(1) .next > a').click()
 
         time.sleep(2)
-        count += 1
-        # 爬取 4 页内容
-        if count == 6:
-            file.close()
-            break
 
+    file.close()
     # 关闭浏览器
     browser.quit()
 
