@@ -14,7 +14,7 @@ import sys
 
 itemKey = "洗发水"
 outputDir = './test'
-chromeDirverPath = r'D:\project\chromedriver/chromedriver.exe'
+chromeDirverPath = r'D:\project\chromedriver/chromedriver.exe' # [neng] 这个路径是hacked，得要想办法。
 pagesNum = 3  # 总共爬取的页数
 # 创建输出目录
 
@@ -117,11 +117,23 @@ def functions():
 if __name__ == '__main__':
     print('Number of arguments:', len(sys.argv), 'arguments.')
     print ('Argument List:', str(sys.argv) )
+    cwd = os.getcwd()
+    print ('current working dir: ' , str(cwd))
+    chromeDirverPath = os.path.join(cwd, 'chromedriver.exe')
+    if not os.path.isfile(chromeDirverPath):
+        print("无法找到chromedrive.exe")
+        print("请下载对应的chromedirve,并放到该目录：")
+        print(cwd)
+        sys.exit()
+    else:
+        print("成功找到chromedriver")
+
     # global pagesNum, outputDir, itemKey
     if len(sys.argv) == 4:
         itemKey = sys.argv[1]
         pagesNum = int(sys.argv[2])
         outputDir = sys.argv[3]
+
     elif len(sys.argv) != 1:
         print('请输入完整指令，例如：')
         print('python taobaoSpider.py 洗发水 3 ./imgDir')
